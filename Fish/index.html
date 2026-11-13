@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#f6f5ef">
+  <meta name="description" content="Лови момент — уютная рыбалка. Открывай новые берега, собирай редкую рыбу и отправляйся навстречу приключениям.">
+  <title>Лови момент — маленькое рыбацкое приключение</title>
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="app">
+    <header class="header">
+      <a class="brand" href="#" aria-label="Лови момент — на главную" data-action="home">
+        <span class="brand-mark" data-icon="fish"></span>
+        <span><strong>Лови момент<span class="brand-dot">.</span></strong><small>МАЛЕНЬКОЕ РЫБАЦКОЕ ПРИКЛЮЧЕНИЕ</small></span>
+      </a>
+      <div class="header-actions">
+        <div class="wallet" aria-label="Баланс"><span class="coin">Т</span><div><b id="balance">0</b><small>Тугриков</small></div></div>
+        <button class="icon-button" data-action="settings" aria-label="Настройки" data-icon="settings"></button>
+      </div>
+    </header>
+    <nav class="navigation" aria-label="Главное меню">
+      <div class="nav-links">
+        <button class="nav-item active" data-action="home"><span data-icon="rod"></span>Рыбалка</button>
+        <button class="nav-item" data-action="map"><span data-icon="map"></span>Карта мира<span class="tiny-label">4</span></button>
+        <button class="nav-item" data-action="shop"><span data-icon="shop"></span>Магазин</button>
+        <button class="nav-item" data-action="atlas"><span data-icon="book"></span>Атлас рыб</button>
+      </div>
+      <span class="nav-note"><span class="online-dot"></span>Никуда не спеши. Просто рыбачь.</span>
+    </nav>
+    <main>
+      <section class="page-heading"><div><div class="eyebrow">ТВОЁ МЕСТО У ВОДЫ</div><h1>Хороший день для рыбалки<span>.</span></h1><p>Закинь удочку. Всё остальное подождёт.</p></div><button class="button subtle heading-map" data-action="map"><span data-icon="compass"></span>Сменить локацию<span data-icon="arrow"></span></button></section>
+      <div class="game-grid">
+        <section class="fishing-card" aria-label="Место рыбалки">
+          <div class="scene-wrap">
+            <canvas id="scene" width="1200" height="720" aria-label="Рисованный пейзаж: рыбак на берегу озера"></canvas>
+            <div id="canvas-fallback" hidden>В вашем браузере недоступен Canvas. Попробуйте современный браузер.</div>
+            <div class="location-badge"><span class="location-icon" data-icon="pin"></span><div><strong id="location-name">Тихая бухта</strong><small id="location-subtitle">Здесь начинается история</small></div></div>
+            <div class="weather-badge"><span data-icon="sun"></span><span id="weather">Тихо и солнечно</span></div>
+            <button class="scene-sound" data-action="sound" aria-label="Включить звук" id="sound-toggle"></button>
+            <div class="scene-caption"><span class="live-dot"></span><span id="scene-caption">Тихая вода. Большие возможности.</span></div>
+            <div class="bite-callout" id="bite-callout" hidden>Поклёвка! Подсекай!</div>
+            <div class="pause-shade" id="pause-shade" hidden><span data-icon="pause"></span>Рыбалка на паузе</div>
+          </div>
+          <div class="fishing-controls">
+            <div class="fishing-status"><span class="status-orb" id="status-orb" data-icon="float"></span><div><strong id="fishing-status">Вода ждёт тебя</strong><small id="fishing-hint">Забрось удочку, чтобы поймать первую рыбу</small></div></div>
+            <button class="button primary cast-button" id="cast-button" data-action="cast"><span data-icon="rod"></span><span id="cast-label">Забросить удочку</span><kbd>ПРОБЕЛ</kbd></button>
+            <div class="fishing-progress" id="fishing-progress" role="progressbar" aria-label="Ожидание поклёвки" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span></span></div>
+          </div>
+        </section>
+        <aside class="sidebar">
+          <section class="panel inventory-panel">
+            <div class="panel-heading"><h2><span data-icon="bag"></span>Мой улов</h2><span class="capacity" id="capacity-label">0 / 5</span></div>
+            <p class="panel-intro">У каждой рыбы своя история.</p>
+            <div class="inventory-slots" id="inventory-preview"></div>
+            <div class="inventory-summary"><span>Стоимость улова</span><strong><span id="inventory-value">0</span> <span class="text-coin">Т</span></strong></div>
+            <button class="button primary sell-preview" id="sell-preview" data-action="sell-all"><span data-icon="coin"></span>Продать весь улов</button>
+            <button class="text-button" data-action="inventory">Открыть инвентарь<span data-icon="arrow"></span></button>
+          </section>
+          <section class="tip-card"><span class="tip-icon" data-icon="sparkles"></span><div><h3>Маленький совет</h3><p id="tip-text">Хорошая приманка — первый шаг к большой рыбе. Загляни в магазин!</p></div></section>
+        </aside>
+      </div>
+      <div class="bottom-grid">
+        <section class="panel equipment-panel"><div class="panel-heading"><h2><span data-icon="tools"></span>Всё для хорошего улова</h2><button class="text-button" data-action="shop">Улучшить<span data-icon="arrow"></span></button></div><div id="equipment-list" class="equipment-list"></div></section>
+        <section class="journey-card" id="journey-card"><div class="journey-illustration" id="boat-illustration"></div><div class="journey-text"><div class="eyebrow">ЗА ГОРИЗОНТОМ БОЛЬШЕ</div><h2 id="journey-title">Новые берега ждут</h2><p id="journey-description">Почини лодку и открой Туманный лес.</p><button class="text-button" data-action="boat">К моей лодке<span data-icon="arrow"></span></button></div></section>
+      </div>
+      <section class="discovery-strip"><span data-icon="fish"></span><span>В этих водах обитают</span><div id="local-rarities"></div><button class="text-button" data-action="atlas">Изучить атлас<span data-icon="arrow"></span></button></section>
+    </main>
+    <footer><span>Лови момент<span class="brand-dot">.</span> <span class="footer-note">Счастье где-то между берегом и поплавком.</span></span><span id="save-indicator"><span class="online-dot"></span>Прогресс сохраняется автоматически</span></footer>
+  </div>
+  <div class="tutorial" id="tutorial" hidden><div class="tutorial-top"><span class="eyebrow" id="tutorial-counter">ПЕРВЫЕ ШАГИ · 1 / 6</span><button class="icon-button small" data-action="skip-tutorial" aria-label="Пропустить обучение" data-icon="close"></button></div><strong id="tutorial-title"></strong><p id="tutorial-text"></p></div>
+  <div class="toasts" id="toasts" aria-live="polite" aria-atomic="false"></div>
+  <dialog id="modal" aria-labelledby="modal-title"><div class="modal-header"><div><div class="eyebrow" id="modal-eyebrow"></div><h2 id="modal-title"></h2></div><button class="icon-button" data-action="close" aria-label="Закрыть" data-icon="close"></button></div><div id="modal-body" class="modal-body"></div><div id="modal-toasts" class="modal-toasts" aria-live="polite"></div></dialog>
+  <noscript><div class="noscript">Чтобы отправиться на рыбалку, включите JavaScript в браузере.</div></noscript>
+  <script src="src/config.js"></script>
+  <script src="src/art.js"></script>
+  <script src="src/saveSystem.js"></script>
+  <script src="src/gameState.js"></script>
+  <script src="src/fishing.js"></script>
+  <script src="src/audio.js"></script>
+  <script src="src/yandexAdapter.js"></script>
+  <script src="src/scene.js"></script>
+  <script src="src/ui.js"></script>
+  <script src="src/main.js"></script>
+</body>
+</html>
