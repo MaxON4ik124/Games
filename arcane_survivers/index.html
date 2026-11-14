@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Алхимик Бездны — HD Dark Fantasy Edition</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Philosopher:wght@700&family=Rubik:wght@400;500;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="./css/style.css">
+<script type="module" src="./src/main.js"></script>
+</head>
+<body>
+
+<canvas id="gameCanvas"></canvas>
+<div id="joyZone"><div id="joyStick"></div></div>
+
+<!-- СИМУЛЯТОР РЕКЛАМЫ YANDEX SDK -->
+<div id="adSimModal" class="hidden">
+  <div class="ad-sim-box">
+    <div id="adSimType" class="ad-sim-tag">YANDEX GAMES SDK</div>
+    <h3 id="adSimTitle">Просмотр видео за награду...</h3>
+    <p class="muted-text">Звук игры автоматически приглушен на время рекламы.</p>
+    <div class="ad-progress-bg"><div id="adProgressFill"></div></div>
+  </div>
+</div>
+
+<!-- ВЕРХНИЙ БОЕВОЙ HUD -->
+<div id="topHud" class="hidden">
+  <div class="hud-group">
+    <div class="bars-stack">
+      <div class="hp-bar-outer">
+        <div id="hudHpBar" class="hp-bar-inner"></div>
+        <div id="hudHpLabel" class="hp-bar-label">20 / 20 HP</div>
+      </div>
+      <div class="xp-bar-outer">
+        <div id="hudXpBar" class="xp-bar-inner"></div>
+        <div id="hudLvlLabel" class="xp-bar-label">УР. 1 (0/20 XP)</div>
+      </div>
+    </div>
+    <div class="resource-badge" title="Кристаллы маны">
+      <img id="hudManaImg" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="">
+      <span id="hudManaVal">0</span>
+    </div>
+    <div class="resource-badge shard" title="Осколки Бездны">
+      <img id="hudShardImg" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="">
+      <span id="hudShardVal">0</span>
+    </div>
+    <div class="resource-badge relic" title="Удача мага">
+      <img id="hudRelicImg" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="">
+      <span id="hudRelicVal">0</span>
+    </div>
+  </div>
+
+  <div class="hud-group">
+    <span id="waveBanner" class="fantasy-font">ВОЛНА 1 — 30.0с</span>
+  </div>
+
+  <div class="hud-group">
+    <button id="aimModeBtn" class="btn btn-xs">Прицел: Авто</button>
+    <button id="soundToggleBtn" class="btn btn-xs">Звук: Вкл</button>
+    <button id="pauseBtn" class="btn btn-xs">Пауза (Esc)</button>
+  </div>
+</div>
+
+<!-- ПОЛОСА БОССА -->
+<div id="bossHud">
+  <div id="bossTitle" class="fantasy-font">АРХИДЕМОН БЕЗДНЫ</div>
+  <div class="boss-track"><div id="bossFill"></div></div>
+</div>
+
+<!-- НИЖНЯЯ ПАНЕЛЬ ЗАКЛИНАНИЙ -->
+<div id="bottomSpellBar" class="hidden"></div>
+
+<!-- ГЛАВНОЕ МЕНЮ -->
+<div id="startModal" class="modal-backdrop">
+  <div class="window-frame start-window">
+    <div class="hero-brand-header">
+      <h1 class="main-logo">АЛХИМИК БЕЗДНЫ</h1>
+      <p class="main-subtitle">Синтезируй заклинания. Выживи в волнах Бездны.</p>
+      <div id="sdkStatusBadge" class="sdk-pill">OOP Modular Engine • Готов к бою</div>
+    </div>
+
+    <div class="menu-top-bar">
+      <div class="nav-tabs">
+        <button id="tabRunBtn" class="tab-btn active">Экспедиция</button>
+        <button id="tabMetaBtn" class="tab-btn">Цитадель Вечности</button>
+      </div>
+
+      <div class="menu-Shard-controls">
+        <div class="resource-badge shard">
+          <img id="menuShardImg" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="">
+          <span>Осколки: <b id="menuShardVal">0</b></span>
+        </div>
+        <button id="menuRewardShardBtn" class="btn btn-purple">
+          <img id="menuAdIcon" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="">
+          <span>+40 Осколков</span>
+        </button>
+      </div>
+    </div>
+
+    <div id="runTabContent">
+      <div class="section-bar-title">Выбери героя</div>
+      <div id="heroesGrid" class="heroes-grid"></div>
+
+      <div class="section-bar-title">Начальное заклинание (Тир 1)</div>
+      <div id="starterSpellsGrid" class="starter-grid"></div>
+
+      <div id="metaSummaryLine" class="meta-summary-bar"></div>
+
+      <button id="beginGameBtn" class="btn btn-gold btn-launch">
+        НАЧАТЬ ЭКСПЕДИЦИЮ
+      </button>
+    </div>
+
+    <div id="metaTabContent" class="hidden">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:10px;">
+        <p class="muted-text">Постоянные улучшения Цитадели сохраняются между забегами:</p>
+        <button id="resetMetaBtn" class="btn btn-crimson">Сбросить таланты (100% возврат)</button>
+      </div>
+      <div id="metaUpgradesGrid" class="meta-grid"></div>
+    </div>
+  </div>
+</div>
+
+<!-- МАГАЗИН МЕЖДУ ВОЛНАМИ -->
+<div id="shopModal" class="modal-backdrop hidden">
+  <div class="window-frame shop-window">
+    <div class="window-header">
+      <div>
+        <h2 id="shopHeaderTitle">КУЗНИЦА И ГРИМУАР</h2>
+        <span class="muted-text">Цены растут с каждой волной • Удача повышает шанс редких находок</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+        <button id="adManaShopBtn" class="btn btn-purple">
+          <img id="shopAdIcon" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="">
+          <span>+45 Маны</span>
+        </button>
+        <button id="startNextWaveBtn" class="btn btn-gold" style="padding:10px 24px;font-size:13px;">СЛЕДУЮЩАЯ ВОЛНА</button>
+      </div>
+    </div>
+
+    <div class="shop-columns">
+      <!-- КОЛОНКА 1: ЛАВКА + МАНА + ОБНОВИТЬ + УДАЧА -->
+      <div class="panel-column">
+        <div class="sub-header showcase-header">
+          <span>ЛАВКА</span>
+          <div class="resource-badge shop-mana-inline" title="Кристаллы маны">
+            <img id="shopManaImg" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="">
+            <span id="shopManaVal">0</span>
+          </div>
+          <button id="rerollShopBtn" class="btn btn-reroll-inline">Обновить (10)</button>
+          <span id="shopLuckBadge" class="badge-pill emerald">Удача: 0</span>
+        </div>
+        <div id="shopOffersGrid" class="shop-showcase-grid"></div>
+
+        <div class="sub-header" style="margin-top:4px;">
+          <span>Характеристики мага</span>
+        </div>
+        <div id="shopStatsBox" class="stats-summary-grid"></div>
+      </div>
+
+      <!-- КОЛОНКА 2: ПОЯС И СУМКА -->
+      <div class="panel-column">
+        <div class="sub-header">
+          <span>Активные заклинания в бою</span>
+          <span id="activeCapText" class="badge-pill">1 / 5</span>
+        </div>
+        <div id="activeInventoryGrid" class="cards-wrap active-inv-wrap"></div>
+
+        <div class="sub-header" style="margin-top:6px;">
+          <span>Сумка хранения (13 слотов)</span>
+          <span id="bagCapText" class="badge-pill">0 / 13</span>
+        </div>
+        <div id="bagInventoryGrid" class="cards-wrap bag-inv-wrap"></div>
+      </div>
+
+      <!-- КОЛОНКА 3: ГРИМУАР СИНТЕЗА -->
+      <div class="panel-column">
+        <div class="sub-header">
+          <span>Гримуар Синтеза и Эволюций</span>
+          <span id="craftableCountBadge" class="badge-pill emerald">Готово: 0</span>
+        </div>
+        <p class="muted-text" style="font-size:11px;line-height:1.35;">
+          Одинаковые спеллы сливаются кнопкой <b>«Слить»</b> на карточке (до Ур. 4/4). Гибриды и <b>Эволюции (Ур. 4 + Маст. 5)</b> крафтятся ниже:
+        </p>
+        <div id="grimoireList" class="grimoire-scroll"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ОКНО ВЫБОРА УРОВНЯ МАСТЕРСТВА -->
+<div id="masteryModal" class="modal-backdrop hidden">
+  <div class="window-frame" style="max-width:680px;">
+    <div class="window-header">
+      <h2>ВОЗВЫШЕНИЕ МАСТЕРСТВА (КАЖДЫЕ 5 УРОВНЕЙ)</h2>
+    </div>
+    <p class="muted-text" style="margin-bottom:14px;">
+      Выберите одно из используемых заклинаний, чтобы навсегда повысить его <b>Уровень Мастерства (до 5/5)</b>:
+    </p>
+    <div id="masteryChoicesGrid" class="meta-grid"></div>
+  </div>
+</div>
+
+<!-- ОКНО ПАУЗЫ -->
+<div id="pauseModal" class="modal-backdrop hidden">
+  <div class="window-frame" style="max-width:420px;text-align:center;">
+    <h2 style="margin-bottom:14px;">ПАУЗА</h2>
+    <div style="display:flex;flex-direction:column;gap:10px;">
+      <button id="resumeGameBtn" class="btn btn-gold" style="padding:11px;">ПРОДОЛЖИТЬ БОЙ</button>
+      <button id="quitToMenuBtn" class="btn btn-crimson" style="padding:11px;">ВЫЙТИ В МЕНЮ</button>
+    </div>
+  </div>
+</div>
+
+<!-- ЭКРАН ПОРАЖЕНИЯ -->
+<div id="gameOverModal" class="modal-backdrop hidden">
+  <div class="window-frame" style="max-width:520px;text-align:center;">
+    <h1 style="color:var(--crimson);margin-bottom:10px;">МАГ ПАЛ В БЕЗДНЕ</h1>
+    <p id="gameOverSummary" class="muted-text" style="margin-bottom:14px;font-size:14px;line-height:1.5;"></p>
+    <div id="earnedShardsBanner" class="shards-banner"></div>
+
+    <div style="display:flex;flex-direction:column;gap:10px;">
+      <button id="reviveAdBtn" class="btn btn-emerald" style="padding:12px;font-size:14px;">
+        <img id="reviveIconImg" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="">
+        <span>ВОСКРЕСНУТЬ С ПОЛНЫМ HP (РЕКЛАМА)</span>
+      </button>
+      <button id="doubleShardsAdBtn" class="btn btn-purple" style="padding:11px;font-size:13px;">
+        <img id="doubleAdIconImg" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="">
+        <span>УДВОИТЬ ОСКОЛКИ БЕЗДНЫ (РЕКЛАМА)</span>
+      </button>
+      <button id="returnToMenuBtn" class="btn btn-gold" style="padding:11px;font-size:14px;">
+        ВЕРНУТЬСЯ В ЦИТАДЕЛЬ
+      </button>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
